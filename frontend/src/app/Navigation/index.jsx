@@ -1,23 +1,11 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button, Drawer, Layout, Menu } from 'antd';
-
 import { useAppContext } from '@/context/appContext';
 import logoIcon from '@/style/images/logo-icon.svg';
 import logoText from '@/style/images/logo-text.svg';
 import history from '@/utils/history';
-
-import {
-  SettingOutlined,
-  CustomerServiceOutlined,
-  FileTextOutlined,
-  FileSyncOutlined,
-  DashboardOutlined,
-  TeamOutlined,
-  UserOutlined,
-  CreditCardOutlined,
-  MenuOutlined,
-} from '@ant-design/icons';
+import { UpOutlined, SettingOutlined, CustomerServiceOutlined, FileTextOutlined, FileSyncOutlined, DashboardOutlined, TeamOutlined, UserOutlined, CreditCardOutlined, MenuOutlined } from '@ant-design/icons';
 
 const SIDEBAR_MENU = [
   { key: '/', icon: <DashboardOutlined />, title: 'Dashboard' },
@@ -37,6 +25,22 @@ const SETTINGS_SUBMENU = [
 
 const { Sider } = Layout;
 const { SubMenu } = Menu;
+
+function ScrollToTopButton() {
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  return (
+    <div
+      className="scroll-to-top-button"
+      style={{ position: 'fixed', bottom: '20px', right: '5px', cursor: 'pointer' }}
+      onClick={scrollToTop}
+    >
+      <Button type="primary" shape="circle" icon={<UpOutlined />} />
+    </div>
+  );
+}
 
 export default function Navigation() {
   return (
@@ -118,15 +122,40 @@ function Sidebar({ collapsible }) {
 }
 
 function MobileSidebar() {
+  const [showScrollButton, setShowScrollButton] = useState(false);
   const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    // Add an event listener to the window's scroll event
+    window.addEventListener('scroll', handleScroll);
+
+    // Clean up the event listener when the component unmounts
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
+  // Function to handle scroll event
+  const handleScroll = () => {
+    // If the user has scrolled down at least 100 pixels, show the button
+    if (window.scrollY >= 70) {
+      setShowScrollButton(true);
+    } else {
+      setShowScrollButton(false);
+    }
+  };
+  
   const showDrawer = () => {
     setVisible(true);
   };
   const onClose = () => {
     setVisible(false);
   };
+
   return (
     <>
+      {/* Render ScrollToTopButton here */}
+      {showScrollButton && <ScrollToTopButton />}
       <Button type="text" size="large" onClick={showDrawer} className="mobile-sidebar-btn">
         <MenuOutlined />
       </Button>
